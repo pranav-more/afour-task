@@ -1,4 +1,5 @@
 import { FormControl, FormGroup, Input, InputLabel, Button, makeStyles, Typography } from "@material-ui/core";
+import moment from 'moment';
 import {useState} from 'react';
 import { addUser } from '../Service/api';
 import { useHistory } from 'react-router-dom';
@@ -15,15 +16,18 @@ const useStyles = makeStyles({
 
 const initialValue = {
     title:'',
-    description:''
+    description:'',
+    createdAt: moment().format('DD/MM/YYYY')
 }
 
 
 const AddData = () => {
+
     const [user, setUser] = useState(initialValue);
-    const { title, description } = user;
+    const { title, description, createdAt } = user;
     const classes = useStyles();
     let history = useHistory();
+
 
     const onValueChange = (e) => {
         console.log(e.target.value);
@@ -47,11 +51,12 @@ const AddData = () => {
                 <InputLabel>Description</InputLabel>
                 <Input onChange={ (e) => onValueChange(e) } name='description' />
             </FormControl>
-            <FormControl>
+            {/* <FormControl>
                 <InputLabel>Created At</InputLabel>
-                <Input onChange={ (e) => onValueChange(e) } name=''/>
-            </FormControl>
-            <Button variant="contained" onClick={() => addUserDetails} color="primary"> Add</Button>
+                <Input onChange={ (e) => onValueChange(e) } name='createdAt'/>
+            </FormControl> */}
+            
+            <Button variant="contained" onClick={() => addUserDetails()} color="primary"> Add</Button>
         </FormGroup>
         )
 }

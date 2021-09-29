@@ -1,8 +1,16 @@
-import { Table, TableBody, TableHead, TableRow, TableCell, makeStyles } from "@material-ui/core";
+import { Table, TableBody, TableHead, TableRow, TableCell, makeStyles, Button, InputLabel, Input } from "@material-ui/core";
 import { useEffect, useState } from "react";
-import { getData } from "../Service/api";
+import { deleteUser, getUsers } from "../Service/api";
+import { Link } from 'react-router-dom';
 
 const useStyle = makeStyles({
+    upperContent:{
+        width: '90%',
+        margin: '50px 0 0 50px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
     table: {
         width: '90%',
         margin: '50px 0 0 50px'
@@ -16,14 +24,22 @@ const useStyle = makeStyles({
     },
     row: {
         '& > *': {
-            fontSize: 18
+            fontSize: 18,
         }
+    },
+    tbody: {
+        // width:'100%',
+        // display:'block',
+        // overflow: 'auto',
+        // height: 800
     }
 })
 
 const AllData = () => {
 
     const [users, setUsers] = useState([]);
+    // for searching
+    const [search, setSearch] = useState('');
     const classes = useStyle();
 
     useEffect(() => {
@@ -31,23 +47,53 @@ const AllData = () => {
     }, [])
 
     const getAllData = async () => {
-       const response = await getData();
+       const response = await getUsers();
        console.log(response.data);
        setUsers(response.data);
     }
 
+    // sorting
+    const sorting = () => {
+        setUsers([...users].sort((a,b) => {
+          return a.title.localeCompare(b.title)
+        }))
+      }
+
+      const deleteUserData = async (id) => {
+        await deleteUser(id);
+        getAllData();
+      }
+
     return(
+        <>
+        <div className={classes.upperContent}>
+            <Button variant="contained" onClick={() => sorting()}>Sort</Button>
+        <div style={{marginLeft: "20px"}}> 
+            <InputLabel>Search</InputLabel>
+                <Input onChange={(e) =>  setSearch(e.target.value) }/>
+        </div>
+        </div>
+
         <Table className={classes.table}>
             <TableHead>
                 <TableRow className={classes.thead}>
                     <TableCell>Id</TableCell>
                     <TableCell>Title </TableCell>
                     <TableCell>description</TableCell>
+                    <TableCell>Created At</TableCell>
+                    <TableCell></TableCell>
                 </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody className={classes.tbody}>
                     {
-                        users.map((item, i) => (
+                        users.filter((data) => {
+                            if (search === "") {
+                              return data
+                            }
+                            else if (data.title.toLowerCase().includes(search.toLowerCase())) {
+                              return data
+                            }
+                          }).map((item, i) => (
                         <TableRow className={classes.row}>
                             <TableCell>
                                 {item.id}
@@ -58,11 +104,19 @@ const AllData = () => {
                             <TableCell>
                                 {item.description}
                             </TableCell>
+                            <TableCell>
+                                {item.createdAt}
+                            </TableCell>
+                            <TableCell>
+                            <Button color="primary" variant="contained" style={{marginRight:10}} component={Link} to={`/edit/${item.id}`}>Edit</Button>
+                            <Button color="secondary" variant="contained" onClick={() => deleteUserData(item.id)}>Delete</Button> 
+                            </TableCell>
                         </TableRow>
                         ))
                     }
             </TableBody>
         </Table>
+        </>
     );
 }
 

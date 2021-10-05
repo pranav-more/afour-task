@@ -13,13 +13,13 @@ const useStyle = makeStyles({
     },
     table: {
         width: '90%',
-        margin: '50px 0 0 50px'
+        margin: '50px 0 0 50px',
     },
     thead: {
         '& > *': {
             fontSize: 20,
             background: '#000000',
-            color: '#FFFFFF'
+            color: '#FFFFFF',
         }
     },
     row: {
@@ -29,9 +29,9 @@ const useStyle = makeStyles({
     },
     tbody: {
         // width:'100%',
-        // display:'block',
+        // display: 'block',
         // overflow: 'auto',
-        // height: 800
+        // height: 500
     }
 })
 
@@ -74,6 +74,7 @@ const AllData = () => {
         </div>
         </div>
 
+        <div style={{display:'block'}}>
         <Table className={classes.table}>
             <TableHead>
                 <TableRow className={classes.thead}>
@@ -88,13 +89,13 @@ const AllData = () => {
                     {
                         users.filter((data) => {
                             if (search === "") {
-                              return data
+                                return data
                             }
                             else if (data.title.toLowerCase().includes(search.toLowerCase())) {
-                              return data
+                                return data
                             }
-                          }).map((item, i) => (
-                        <TableRow className={classes.row}>
+                        }).map((item, i) => (
+                            <TableRow className={classes.row}>
                             <TableCell>
                                 {item.id}
                             </TableCell>
@@ -107,15 +108,18 @@ const AllData = () => {
                             <TableCell>
                                 {item.createdAt}
                             </TableCell>
+                     
                             <TableCell>
                             <Button color="primary" variant="contained" style={{marginRight:10}} component={Link} to={`/edit/${item.id}`}>Edit</Button>
-                            <Button color="secondary" variant="contained" onClick={() => deleteUserData(item.id)}>Delete</Button> 
+                            <Button color="secondary" variant="contained" onClick={() => { if(window.confirm('Confirm delete?')) {
+                                deleteUserData(item.id) }}}>Delete</Button> 
                             </TableCell>
                         </TableRow>
                         ))
                     }
             </TableBody>
         </Table>
+                    </div>
         </>
     );
 }
